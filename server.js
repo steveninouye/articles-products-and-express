@@ -2,6 +2,12 @@ const express = require('express');
 const hbs = require('hbs');
 const bodyParser = require('body-parser');
 
+const { AllProducts, Product } = require('./db/products');
+// const _Articles = require('./db/aritlces');
+// const _AllProducts = new AllProducts();
+AllProducts.addProduct(new Product('Steve', 24, 5));
+AllProducts.addProduct(new Product('Ann', 22, 10));
+
 const jsonParser = bodyParser.json();
 const app = express();
 const PORT = 8080;
@@ -12,31 +18,73 @@ hbs.registerPartials(__dirname + '/views/partials');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
 
-app.get('/', (req, res) => {
-  res.render('index', { hello: 'hi' });
-});
-
 app.get('/products', (req, res) => {
   /*responds with HTML generated from your template which displays all Products added thus far.
 file name: index.hbs*/
-  res.render('index', { hello: 'hi' });
-});
-
-app.get('/products/:id', (req, res) => {
-  /*responds with HTML generated from your template which displays the Products information for the product with the corresponding id.
-file name: product.hbs*/
-});
-
-app.get('/products/:id/edit', (req, res) => {
-  /*responds with HTML generated from your templates.
-The HTML should contain a form (with values already pre-filled?) so that a user can update the information for a product. This form points to your server's route for editing a product.
-file name: edit.hbs*/
+  res.render('index', {
+    title: 'Products',
+    allProducts: AllProducts.getAllProducts()
+  });
 });
 
 app.get('/products/new', (req, res) => {
   /*responds with HTML generated from your templates.
 The HTML should contain an empty form which a user will be able to create a new product. This form points to your server's route for creating a new product.
 file name: new.hbs*/
+  res.render('new');
+});
+
+app.get('/products/:id', (req, res) => {
+  /*responds with HTML generated from your template which displays the Products information for the product with the corresponding id.
+file name: product.hbs*/
+  const ArrayOfMatchingProducts = AllProducts.getAllProducts().reduce(
+    (a, c) => {
+      if (c.id === Number(req.params.id)) {
+        a.push(c);
+      }
+      return a;
+    },
+    []
+  );
+  if (ArrayOfMatchingProducts.length === 1) {
+    const { id, name, price, inventory } = ArrayOfMatchingProducts[0];
+    res.render('product', {
+      id,
+      name,
+      price,
+      inventory
+    });
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
+});
+
+app.get('/products/:id/edit', (req, res) => {
+  /*responds with HTML generated from your templates.
+The HTML should contain a form (with values already pre-filled?) so that a user can update the information for a product. This form points to your server's route for editing a product.
+file name: edit.hbs*/
+  const ArrayOfMatchingProducts = AllProducts.getAllProducts().reduce(
+    (a, c) => {
+      if (c.id === Number(req.params.id)) {
+        a.push(c);
+      }
+      return a;
+    },
+    []
+  );
+  if (ArrayOfMatchingProducts.length === 1) {
+    const { id, name, price, inventory } = ArrayOfMatchingProducts[0];
+    res.render('edit', {
+      id,
+      name,
+      price,
+      inventory
+    });
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
+
+  //////////////////TO DO!!!!!! edit edit.hbs to make PUT request to server///////////////////
 });
 
 app.post('/products', (req, res) => {
@@ -44,10 +92,22 @@ app.post('/products', (req, res) => {
   The incoming request will look like this: { name: String, price: String, inventory: String }
   from this request you will save your data as { id: Number, name: String, price: Number, inventory: Number }
   id is a unique identifier for this item. You will generate this on the server side and it will be used to access specific products with it
-  If successful then redirect the user back to the /products route.
-If not successful then send the user back to the new product route, /products/new and some way to communicate the error back to the user via templating.*/
-
-  res.send(req.body);
+  If successful then redirect the user back to the /products route.*/
+  let { name, price, inventory } = req.body;
+  // verify price is a number and cut off any remaining decimals
+  price = parseInt(Number(price) * 100) / 100;
+  // verify that inventory is a number
+  inventory = Number(inventory);
+  // verify that name, price, and inventory is input with valid inputs
+  if (name && price && inventory) {
+    const newProduct = new Product(name, price, inventory);
+    AllProducts.addProduct(newProduct);
+    res.redirect('/products');
+  } else {
+    /*If not successful then send the user back to the new product route, /products/new and some way to communicate the error back to the user via templating.*/
+    //////////////////////TO DO!!!!!!!!///////////////////////////////
+    res.send(req.body);
+  }
 });
 
 app.put('/products/:id', (req, res) => {

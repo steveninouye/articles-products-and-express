@@ -1,4 +1,6 @@
-class AllProducts {
+let id = new Date().getTime();
+
+class _AllProducts {
   constructor() {
     this.storage = [];
   }
@@ -19,12 +21,13 @@ class AllProducts {
 
 class Product {
   constructor(name, price, inventory) {
+    this.id = id++;
     this.name = name;
     this.price = price;
     this.inventory = inventory;
   }
 
-  getProduct() {
+  getName() {
     return this.name;
   }
 
@@ -61,6 +64,8 @@ class Product {
     }
   }
 }
+
+const AllProducts = new _AllProducts();
 
 module.exports = {
   Product,

@@ -1,0 +1,12 @@
+{{> header}}
+<form action="/products" method="POST">
+    Name:
+    <input type="text" name="name" id="name">
+    <br>Price:
+    <input type="text" name="price" id="price">
+    <br>Inventory:
+    <input type="text" name="inventory" id="inventory">
+    <input type="submit" value="submit">
+</form>
+<a href="/products">Back to Products List</a>
+{{> footer}}
