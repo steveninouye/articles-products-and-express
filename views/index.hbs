@@ -1,6 +1,6 @@
 {{> header}}
-<h1>{{title}}</h1>
-
+<h1>{{title}}s</h1>
+<a href="/{{path}}/new">Create New {{title}}</a>
 <table>
     <tr>
         <th>ID</th>
@@ -10,10 +10,18 @@
     </tr>
     {{#each allProducts}}
     <tr>
-        <td>{{id}}</td>
-        <td>{{name}}</td>
-        <td>${{price}}</td>
-        <td>{{inventory}}</td>
+        <td>
+            <a href="/{{../path}}/{{id}}">{{id}}</a>
+        </td>
+        <td>
+            <a href="/{{../path}}/{{id}}">{{name}}</a>
+        </td>
+        <td>
+            <a href="/{{../path}}/{{id}}">${{price}}</a>
+        </td>
+        <td>
+            <a href="/{{../path}}/{{id}}">{{inventory}}</a>
+        </td>
     </tr>
 
     {{/each}}

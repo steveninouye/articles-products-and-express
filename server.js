@@ -8,7 +8,6 @@ const { AllProducts, Product } = require('./db/products');
 AllProducts.addProduct(new Product('Steve', 24, 5));
 AllProducts.addProduct(new Product('Ann', 22, 10));
 
-const jsonParser = bodyParser.json();
 const app = express();
 const PORT = 8080;
 
@@ -17,12 +16,14 @@ app.engine('hbs', hbs.__express);
 hbs.registerPartials(__dirname + '/views/partials');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
+app.use(require('express-method-override')());
 
 app.get('/products', (req, res) => {
   /*responds with HTML generated from your template which displays all Products added thus far.
 file name: index.hbs*/
   res.render('index', {
-    title: 'Products',
+    title: 'Product',
+    path: 'products',
     allProducts: AllProducts.getAllProducts()
   });
 });
@@ -31,7 +32,7 @@ app.get('/products/new', (req, res) => {
   /*responds with HTML generated from your templates.
 The HTML should contain an empty form which a user will be able to create a new product. This form points to your server's route for creating a new product.
 file name: new.hbs*/
-  res.render('new');
+  res.render('new', { title: 'Product' });
 });
 
 app.get('/products/:id', (req, res) => {
@@ -193,9 +194,17 @@ app.get('/articles', (req, res) => {
   /*responds with HTML generated from your template which displays all Articles added thus far.
 file name: index.hbs*/
   res.render('index', {
-    title: 'Articles',
+    title: 'Article',
+    path: 'articles',
     allProducts: AllProducts.getAllProducts()
   });
+});
+
+app.get('/articles/new', (req, res) => {
+  /*responds with HTML generated from your templates.
+The HTML should contain an empty form which a user will be able to create a new article. This form points to your server's route for creating a new article.
+file name: new.hbs*/
+  res.render('new', { title: 'Article' });
 });
 
 app.get('/articles/:title', (req, res) => {
@@ -207,12 +216,6 @@ app.get('/articles/:title/edit', (req, res) => {
   /*responds with HTML generated from your templates.
 The HTML should contain a form (with values already pre-filled?) so that a user can update the information for an article. This form points to your server's route for editing an article.
 file name: edit.hbs*/
-});
-
-app.get('/articles/new', (req, res) => {
-  /*responds with HTML generated from your templates.
-The HTML should contain an empty form which a user will be able to create a new article. This form points to your server's route for creating a new article.
-file name: new.hbs*/
 });
 
 app.post('/articles', (req, res) => {

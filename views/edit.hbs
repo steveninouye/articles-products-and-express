@@ -1,11 +1,16 @@
 {{> header}}
-<form action="/method" method="POST">
-    <input type="hidden" name="_method" value="put" /> Name:
+<form action="/products/{{id}}" method="POST">
+    <input type="hidden" name="_method" value="PUT" /> Name:
     <input type="text" name="name" id="name" value="{{name}}">
     <br>Price:
     <input type="text" name="price" id="price" value="{{price}}">
     <br>Inventory:
     <input type="text" name="inventory" id="inventory" value="{{inventory}}">
+    <input type="submit" value="Edit">
+</form>
+<form action="/products/{{id}}" method="POST">
+    <input type="hidden" name="_method" value="DELETE">
+    <input type="submit" value="DELETE {{name}}">
 </form>
 <a href="/products">Back to Products List</a>
 {{> footer}}
