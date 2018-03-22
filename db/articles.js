@@ -5,14 +5,14 @@ class _AllArticles {
 
   addArticle(article) {
     if (article instanceof Article) {
-      this.storage.push(product);
+      this.storage.push(article);
       return true;
     } else {
       throw new Error('Add Valid Product to Products');
     }
   }
 
-  getAllProducts() {
+  getAllArticles() {
     return this.storage;
   }
 
@@ -23,9 +23,28 @@ class _AllArticles {
     }, []);
   }
 
+  getIndexOfTitle(title) {
+    const returnValue =
+      this.getAllTitles().indexOf(title) !== -1
+        ? this.getAllTitles().indexOf(title)
+        : false;
+    return returnValue;
+  }
+
   searchForTitle(title) {
-    const indexOfTitle = this.getAllTitles().indexOf(title);
-    return this.storage[indexOfTitle];
+    const returnValue = this.getIndexOfTitle(title)
+      ? this.storage[this.getIndexOfTitle(title)]
+      : false;
+    return returnValue;
+  }
+
+  deleteTitle(title) {
+    if (this.getIndexOfTitle(title)) {
+      this.storage.splice(this.getIndexOfTitle(title), 1);
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 
@@ -34,7 +53,7 @@ class Article {
     this.title = title;
     this.body = body;
     this.author = author;
-    urlTitle: encodeURI(title);
+    this.urlTitle = encodeURI(title);
   }
 
   getTitle() {
@@ -64,9 +83,9 @@ class Article {
   }
 }
 
-const AllProducts = new _AllProducts();
+const AllArticles = new _AllArticles();
 
 module.exports = {
-  Product,
-  AllProducts
+  Article,
+  AllArticles
 };

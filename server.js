@@ -3,10 +3,15 @@ const hbs = require('hbs');
 const bodyParser = require('body-parser');
 
 const { AllProducts, Product } = require('./db/products');
-// const _Articles = require('./db/aritlces');
-// const _AllProducts = new AllProducts();
+const { AllArticles, Article } = require('./db/articles');
 AllProducts.addProduct(new Product('Steve', 24, 5));
 AllProducts.addProduct(new Product('Ann', 22, 10));
+AllArticles.addArticle(
+  new Article('Red Fern Grows', 'this is a scary story', 'Steven King')
+);
+AllArticles.addArticle(
+  new Article('GooseBumps', 'kids scary stories', 'Stan Sherriff')
+);
 
 const app = express();
 const PORT = 8080;
@@ -21,10 +26,12 @@ app.use(require('express-method-override')());
 app.get('/products', (req, res) => {
   /*responds with HTML generated from your template which displays all Products added thus far.
 file name: index.hbs*/
+  const productKeys = Object.keys(AllProducts.storage[0]);
   res.render('index', {
     title: 'Product',
     path: 'products',
-    allProducts: AllProducts.getAllProducts()
+    keys: productKeys,
+    data: AllProducts.getAllProducts()
   });
 });
 
@@ -32,7 +39,7 @@ app.get('/products/new', (req, res) => {
   /*responds with HTML generated from your templates.
 The HTML should contain an empty form which a user will be able to create a new product. This form points to your server's route for creating a new product.
 file name: new.hbs*/
-  res.render('new', { title: 'Product' });
+  res.render('new', { title: 'Product', path: 'products' });
 });
 
 app.get('/products/:id', (req, res) => {
@@ -76,6 +83,7 @@ file name: edit.hbs*/
   if (ArrayOfMatchingProducts.length === 1) {
     const { id, name, price, inventory } = ArrayOfMatchingProducts[0];
     res.render('edit', {
+      path: 'products',
       id,
       name,
       price,
@@ -84,8 +92,6 @@ file name: edit.hbs*/
   } else {
     res.status(404).render('404', { url: req.url });
   }
-
-  //////////////////TO DO!!!!!! edit edit.hbs to make PUT request to server///////////////////
 });
 
 app.post('/products', (req, res) => {
@@ -193,10 +199,13 @@ If successful then redirect the user back to the /products page and some way to 
 app.get('/articles', (req, res) => {
   /*responds with HTML generated from your template which displays all Articles added thus far.
 file name: index.hbs*/
+  const articleKeys = Object.keys(AllArticles.storage[0]);
+  articleKeys.splice(articleKeys.indexOf('urlTitle'), 1);
   res.render('index', {
     title: 'Article',
     path: 'articles',
-    allProducts: AllProducts.getAllProducts()
+    keys: articleKeys,
+    data: AllArticles.getAllArticles()
   });
 });
 
@@ -204,18 +213,61 @@ app.get('/articles/new', (req, res) => {
   /*responds with HTML generated from your templates.
 The HTML should contain an empty form which a user will be able to create a new article. This form points to your server's route for creating a new article.
 file name: new.hbs*/
-  res.render('new', { title: 'Article' });
+  res.render('new', { title: 'Article', path: 'articles' });
 });
 
 app.get('/articles/:title', (req, res) => {
   /*responds with HTML generated from your template which displays the Article information for the article with the corresponding title.
 file name: article.hbs*/
+  console.log(req.params.title);
+  console.log(AllArticles.getAllArticles()[0].urlTitle);
+  const ArrayOfMatchingArticles = AllArticles.getAllArticles().reduce(
+    (a, c) => {
+      if (c.title === req.params.title) {
+        a.push(c);
+      }
+      return a;
+    },
+    []
+  );
+  if (ArrayOfMatchingArticles.length === 1) {
+    const { urlTitle, title, body, author } = ArrayOfMatchingArticles[0];
+    res.render('article', {
+      urlTitle,
+      title,
+      body,
+      author
+    });
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
 });
 
 app.get('/articles/:title/edit', (req, res) => {
   /*responds with HTML generated from your templates.
 The HTML should contain a form (with values already pre-filled?) so that a user can update the information for an article. This form points to your server's route for editing an article.
 file name: edit.hbs*/
+  const ArrayOfMatchingArticless = AllArticless.getAllArticless().reduce(
+    (a, c) => {
+      if (c.title === req.params.title) {
+        a.push(c);
+      }
+      return a;
+    },
+    []
+  );
+  if (ArrayOfMatchingArticless.length === 1) {
+    const { urlTitle, title, body, author } = ArrayOfMatchingArticless[0];
+    res.render('edit', {
+      path: 'articles',
+      id: urlTitle,
+      title,
+      body,
+      author
+    });
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
 });
 
 app.post('/articles', (req, res) => {

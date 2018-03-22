@@ -1,5 +1,5 @@
 {{> header}}
-<form action="/products/{{id}}" method="POST">
+<form action="/{{path}}/{{id}}" method="POST">
     <input type="hidden" name="_method" value="PUT" /> Name:
     <input type="text" name="name" id="name" value="{{name}}">
     <br>Price:

@@ -17,6 +17,12 @@ class _AllProducts {
   getAllProducts() {
     return this.storage;
   }
+
+  getAllProductID() {
+    this.storage.reduce((a, c) => {
+      c;
+    });
+  }
 }
 
 class Product {

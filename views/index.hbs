@@ -2,33 +2,25 @@
 <h1>{{title}}s</h1>
 <a href="/{{path}}/new">Create New {{title}}</a>
 <table>
-    <tr>
-        <th>ID</th>
-        <th>Item</th>
-        <th>Price</th>
-        <th>Inventory</th>
-    </tr>
-    {{#each allProducts}}
-    <tr>
-        <td>
-            <a href="/{{../path}}/{{id}}">{{id}}</a>
-        </td>
-        <td>
-            <a href="/{{../path}}/{{id}}">{{name}}</a>
-        </td>
-        <td>
-            <a href="/{{../path}}/{{id}}">${{price}}</a>
-        </td>
-        <td>
-            <a href="/{{../path}}/{{id}}">{{inventory}}</a>
-        </td>
-    </tr>
-
-    {{/each}}
+    <thead>
+        <tr>
+            {{#each keys}}
+            <th>{{this}}</th>
+            {{/each}}
+        </tr>
+    </thead>
+    <tbody>
+        {{#each data}}
+        <tr>
+            {{#each ../keys}}
+            <td>
+                <a href="/{{../../path}}/{{#if ../id}}{{../id}}{{/if}}{{#if ../urlTitle}}{{../urlTitle}}{{/if}}">{{lookup .. this}}</a>
+            </td>
+            {{/each}}
+        </tr>
+        {{/each}}
+    </tbody>
 </table>
-
-
-
 
 <h2>{{hello}}</h2>
 {{> footer}}
