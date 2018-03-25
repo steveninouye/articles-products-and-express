@@ -20,15 +20,23 @@ app.set('view engine', 'hbs');
 app.engine('hbs', hbs.__express);
 hbs.registerPartials(__dirname + '/views/partials');
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static('public'));
+app.use(express.static(__dirname + '/public'));
 app.use(require('express-method-override')());
+
+hbs.registerHelper('capitalFirstLetter', str => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+});
+
+app.get('/', (req, res) => {
+  res.render('home');
+});
 
 app.get('/products', (req, res) => {
   /*responds with HTML generated from your template which displays all Products added thus far.
 file name: index.hbs*/
   const productKeys = Object.keys(AllProducts.storage[0]);
   res.render('index', {
-    title: 'Product',
+    title: 'product',
     path: 'products',
     keys: productKeys,
     data: AllProducts.getAllProducts()
@@ -39,7 +47,8 @@ app.get('/products/new', (req, res) => {
   /*responds with HTML generated from your templates.
 The HTML should contain an empty form which a user will be able to create a new product. This form points to your server's route for creating a new product.
 file name: new.hbs*/
-  res.render('new', { title: 'Product', path: 'products' });
+  const keys = ['name', 'price', 'inventory'];
+  res.render('new', { title: 'Product', path: 'products', keys });
 });
 
 app.get('/products/:id', (req, res) => {
@@ -82,12 +91,14 @@ file name: edit.hbs*/
   );
   if (ArrayOfMatchingProducts.length === 1) {
     const { id, name, price, inventory } = ArrayOfMatchingProducts[0];
+    const keys = ['name', 'price', 'inventory'];
     res.render('edit', {
-      path: 'products',
-      id,
-      name,
-      price,
-      inventory
+      title: 'product',
+      idName: 'ID:',
+      idValue: id,
+      path: '/products/' + id,
+      keys,
+      data: ArrayOfMatchingProducts[0]
     });
   } else {
     res.status(404).render('404', { url: req.url });
@@ -202,7 +213,7 @@ file name: index.hbs*/
   const articleKeys = Object.keys(AllArticles.storage[0]);
   articleKeys.splice(articleKeys.indexOf('urlTitle'), 1);
   res.render('index', {
-    title: 'Article',
+    title: 'article',
     path: 'articles',
     keys: articleKeys,
     data: AllArticles.getAllArticles()
@@ -213,14 +224,13 @@ app.get('/articles/new', (req, res) => {
   /*responds with HTML generated from your templates.
 The HTML should contain an empty form which a user will be able to create a new article. This form points to your server's route for creating a new article.
 file name: new.hbs*/
-  res.render('new', { title: 'Article', path: 'articles' });
+  const keys = ['title', 'body', 'author'];
+  res.render('new', { title: 'Article', path: 'articles', keys });
 });
 
 app.get('/articles/:title', (req, res) => {
   /*responds with HTML generated from your template which displays the Article information for the article with the corresponding title.
 file name: article.hbs*/
-  console.log(req.params.title);
-  console.log(AllArticles.getAllArticles()[0].urlTitle);
   const ArrayOfMatchingArticles = AllArticles.getAllArticles().reduce(
     (a, c) => {
       if (c.title === req.params.title) {
@@ -247,7 +257,7 @@ app.get('/articles/:title/edit', (req, res) => {
   /*responds with HTML generated from your templates.
 The HTML should contain a form (with values already pre-filled?) so that a user can update the information for an article. This form points to your server's route for editing an article.
 file name: edit.hbs*/
-  const ArrayOfMatchingArticless = AllArticless.getAllArticless().reduce(
+  const ArrayOfMatchingArticles = AllArticles.getAllArticles().reduce(
     (a, c) => {
       if (c.title === req.params.title) {
         a.push(c);
@@ -256,14 +266,17 @@ file name: edit.hbs*/
     },
     []
   );
-  if (ArrayOfMatchingArticless.length === 1) {
-    const { urlTitle, title, body, author } = ArrayOfMatchingArticless[0];
+  if (ArrayOfMatchingArticles.length === 1) {
+    const { urlTitle, title, body, author } = ArrayOfMatchingArticles[0];
+    let keys = ['body', 'author'];
+
     res.render('edit', {
-      path: 'articles',
-      id: urlTitle,
-      title,
-      body,
-      author
+      title: 'article',
+      idName: 'Title',
+      idValue: title,
+      path: `/articles/${urlTitle}`,
+      keys,
+      data: ArrayOfMatchingArticles[0]
     });
   } else {
     res.status(404).render('404', { url: req.url });
@@ -278,6 +291,23 @@ title is a unique identifier for this item.
 urlTitle is similar to the title that was passed in but instead is a URL Encoded version. Javascript has a native way to url-encode strings. example: If given a title of "The Best Magpie Developer of 2016", it's url-encoded equivilent is "The%20Best%20Magpie%20Developer%20of%202016".
 If successful then redirect the user back to the /articles route.
 If not successful then send the user back to the new article route, /articles/new and some way to communicate the error back to the user via templating.*/
+  let { title, body, author } = req.body;
+  //trim any excess white space from beginning and ending of data input
+  title = title.trim();
+  body = body.trim();
+  author = author.trim();
+  //get length of each data input without whitespaces
+  const lengthOfTitle = title.length;
+  const lengthOfBody = body.length;
+  const lengthOfAuthor = author.length;
+  if (lengthOfTitle > 0 && lengthOfBody > 0 && lengthOfAuthor > 0) {
+    AllArticles.addArticle(new Article(title, body, author));
+    res.redirect('/articles');
+  } else {
+    /*If not successful then send the user back to the new product route, /products/new and some way to communicate the error back to the user via templating.*/
+    //////////////////////TO DO!!!!!!!!///////////////////////////////
+    res.send(req.body);
+  }
 });
 
 app.put('/articles/:title', (req, res) => {
@@ -286,12 +316,72 @@ The incoming request will look like this: { title: String, ... }
 ... represents a field to be edited for example: if the server was sent { title: "The Best Magpie Developer of 2016" } the server will find an article with a title property to be "The Best Magpie Developer of 2016".
 If successful then redirect the user back to the /articles/:title route, where :title is the article that was just edited, so that they can see the updated resource.
 If not successful then send the user back to the new article route, /article/:title/edit and some way to communicate the error back to the user via templating.*/
+  let { body, author } = req.body;
+  //trim any excess white space from beginning and ending of data input
+
+  body = body.trim();
+  author = author.trim();
+  //get length of each data input without whitespaces
+  const lengthOfBody = body.length;
+  const lengthOfAuthor = author.length;
+  if (lengthOfBody > 0 && lengthOfAuthor > 0) {
+    const ArrayOfMatchingArticles = AllArticles.getAllArticles().reduce(
+      (a, c) => {
+        if (c.title === req.params.title) {
+          a.push(c);
+        }
+        return a;
+      },
+      []
+    );
+    if (ArrayOfMatchingArticles.length === 1) {
+      const indexOfMatchingArticle = AllArticles.storage.indexOf(
+        ArrayOfMatchingArticles[0]
+      );
+
+      if (body) {
+        AllArticles.storage[indexOfMatchingArticle].body = body;
+      }
+      if (author) {
+        AllArticles.storage[indexOfMatchingArticle].author = author;
+      }
+      res.redirect('/articles');
+    } else {
+      res.status(404).render('404', { url: req.url });
+    }
+
+    res.redirect('/articles');
+  } else {
+    /*If not successful then send the user back to the new product route, /products/new and some way to communicate the error back to the user via templating.*/
+    //////////////////////TO DO!!!!!!!!///////////////////////////////
+    res.send(req.body);
+  }
 });
 
 app.delete('/articles/:title', (req, res) => {
   /*removes a article by it's title.
 If successful then redirect the user back to the /articles page and some way to communicate to the user that this action was successful.
 If not successful then send the user back to the new article route, /article/:title, where :title is the article that was just edited and a message that this action was unsucessful.*/
+  const title = req.params.title;
+
+  const ArrayOfMatchingArticles = AllArticles.getAllArticles().reduce(
+    (a, c) => {
+      if (c.title === req.params.title) {
+        a.push(c);
+      }
+      return a;
+    },
+    []
+  );
+  if (ArrayOfMatchingArticles.length === 1) {
+    const indexOfMatchingArticle = AllArticles.storage.indexOf(
+      ArrayOfMatchingArticles[0]
+    );
+    AllArticles.storage.splice(indexOfMatchingArticle, 1);
+    res.redirect('/articles');
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
 });
 
 app.listen(PORT, () => {

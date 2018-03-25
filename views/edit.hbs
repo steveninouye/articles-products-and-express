@@ -1,16 +1,14 @@
-{{> header}}
-<form action="/{{path}}/{{id}}" method="POST">
-    <input type="hidden" name="_method" value="PUT" /> Name:
-    <input type="text" name="name" id="name" value="{{name}}">
-    <br>Price:
-    <input type="text" name="price" id="price" value="{{price}}">
-    <br>Inventory:
-    <input type="text" name="inventory" id="inventory" value="{{inventory}}">
-    <input type="submit" value="Edit">
+{{> header}} Edit {{capitalFirstLetter title}}
+<br>{{idName}} {{idValue}}
+<form action="{{path}}" method="POST">
+    <input type="hidden" name="_method" value="PUT"> {{#each keys}} {{this}}:
+    <input type="text" name="{{this}}" id="name" value="{{lookup ../data this}}">
+    <br> {{/each}}
+    <input type="submit" value="Edit {{capitalFirstLetter title}}">
 </form>
-<form action="/products/{{id}}" method="POST">
+<form action="{{path}}" method="POST">
     <input type="hidden" name="_method" value="DELETE">
-    <input type="submit" value="DELETE {{name}}">
+    <input type="submit" value="Delete {{capitalFirstLetter title}}">
 </form>
-<a href="/products">Back to Products List</a>
+<a href="/{{title}}s">Back to {{capitalFirstLetter title}}s List</a>
 {{> footer}}

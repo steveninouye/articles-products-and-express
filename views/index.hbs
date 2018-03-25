@@ -1,14 +1,16 @@
 {{> header}}
-<h1>{{title}}s</h1>
-<a href="/{{path}}/new">Create New {{title}}</a>
+<h1>{{capitalFirstLetter title}}s</h1>
+<a href="/{{path}}/new">Create New {{capitalFirstLetter title}}</a>
 <table>
+    {{!-- Add Table Headers for each item in keys --}}
     <thead>
         <tr>
             {{#each keys}}
-            <th>{{this}}</th>
+            <th>{{capitalFirstLetter this}}</th>
             {{/each}}
         </tr>
     </thead>
+    {{!-- Add Header Data for each item in Data --}}
     <tbody>
         {{#each data}}
         <tr>
@@ -21,6 +23,9 @@
         {{/each}}
     </tbody>
 </table>
+<br>
+<br>
+<a href="/">Go to Home Page</a>
 
 <h2>{{hello}}</h2>
 {{> footer}}
