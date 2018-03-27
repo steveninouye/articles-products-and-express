@@ -19,9 +19,49 @@ class _AllProducts {
   }
 
   getAllProductID() {
-    this.storage.reduce((a, c) => {
-      c;
-    });
+    return this.storage.reduce((a, c) => {
+      a.push(c.id);
+      return a;
+    }, []);
+  }
+
+  getIndexOfProduct(id) {
+    const returnValue =
+      this.getAllProductID().indexOf(id) !== -1
+        ? this.getAllProductID().indexOf(id)
+        : false;
+    return returnValue;
+  }
+
+  searchForProduct(id) {
+    const returnValue =
+      this.getIndexOfProduct(id) !== false
+        ? this.storage[this.getIndexOfProduct(id)]
+        : false;
+    return returnValue;
+  }
+
+  deleteProduct(id) {
+    if (this.getIndexOfProduct(id) !== false) {
+      this.storage.splice(this.getIndexOfProduct(id), 1);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  editProduct(id, name, price, inventory) {
+    name = name.trim();
+    price = parseInt(Number(price.trim()) * 100) / 100;
+    inventory = parseInt(inventory.trim());
+    if (this.getIndexOfProduct(id) !== false && name && price && inventory) {
+      this.storage[this.getIndexOfProduct(id)].name = name;
+      this.storage[this.getIndexOfProduct(id)].price = price;
+      this.storage[this.getIndexOfProduct(id)].inventory = inventory;
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 

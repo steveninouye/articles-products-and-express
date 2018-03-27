@@ -7,11 +7,12 @@ const PORT = 8080;
 
 app.set('view engine', 'hbs');
 app.engine('hbs', hbs.__express);
-hbs.registerPartials(__dirname + '/views/partials');
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(__dirname + '/public'));
 app.use(require('express-method-override')());
 
+hbs.registerPartials(__dirname + '/views/partials');
 hbs.registerHelper('capitalFirstLetter', str => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 });
