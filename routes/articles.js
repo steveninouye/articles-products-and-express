@@ -9,24 +9,8 @@ AllArticles.addArticle(
 
 function DELETE_articles_TITLE() {
   return (req, res) => {
-    /*removes a article by it's title.
-    If successful then redirect the user back to the /articles page and some way to communicate to the user that this action was successful.
-    If not successful then send the user back to the new article route, /article/:title, where :title is the article that was just edited and a message that this action was unsucessful.*/
     const title = req.params.title;
-    const ArrayOfMatchingArticles = AllArticles.getAllArticles().reduce(
-      (a, c) => {
-        if (c.title === req.params.title) {
-          a.push(c);
-        }
-        return a;
-      },
-      []
-    );
-    if (ArrayOfMatchingArticles.length === 1) {
-      const indexOfMatchingArticle = AllArticles.storage.indexOf(
-        ArrayOfMatchingArticles[0]
-      );
-      AllArticles.storage.splice(indexOfMatchingArticle, 1);
+    if (title && AllArticles.deleteTitle(title)) {
       res.redirect('/articles');
     } else {
       res.status(404).render('404', { url: req.url });
@@ -36,75 +20,30 @@ function DELETE_articles_TITLE() {
 
 function PUT_articles_TITLE() {
   return (req, res) => {
-    /*edits a product. Finds an article in a collection with the same title value and updates the information.
-    The incoming request will look like this: { title: String, ... }
-    ... represents a field to be edited for example: if the server was sent { title: "The Best Magpie Developer of 2016" } the server will find an article with a title property to be "The Best Magpie Developer of 2016".
-    If successful then redirect the user back to the /articles/:title route, where :title is the article that was just edited, so that they can see the updated resource.
-    If not successful then send the user back to the new article route, /article/:title/edit and some way to communicate the error back to the user via templating.*/
+    const title = req.params.title;
     let { body, author } = req.body;
     //trim any excess white space from beginning and ending of data input
     body = body.trim();
     author = author.trim();
-    //get length of each data input without whitespaces
-    const lengthOfBody = body.length;
-    const lengthOfAuthor = author.length;
-    if (lengthOfBody > 0 && lengthOfAuthor > 0) {
-      const ArrayOfMatchingArticles = AllArticles.getAllArticles().reduce(
-        (a, c) => {
-          if (c.title === req.params.title) {
-            a.push(c);
-          }
-          return a;
-        },
-        []
-      );
-      if (ArrayOfMatchingArticles.length === 1) {
-        const indexOfMatchingArticle = AllArticles.storage.indexOf(
-          ArrayOfMatchingArticles[0]
-        );
-        if (body) {
-          AllArticles.storage[indexOfMatchingArticle].body = body;
-        }
-        if (author) {
-          AllArticles.storage[indexOfMatchingArticle].author = author;
-        }
-        res.redirect('/articles');
-      } else {
-        res.status(404).render('404', { url: req.url });
-      }
+    if (AllArticles.editTitle(title, body, author)) {
+      res.redirect('/articles');
     } else {
-      /*If not successful then send the user back to the new product route, /products/new and some way to communicate the error back to the user via templating.*/
-      //////////////////////TO DO!!!!!!!!///////////////////////////////
-      res.send(req.body);
+      res.status(404).render('404', { url: req.url });
     }
   };
 }
 
 function POST_articles() {
   return (req, res) => {
-    /*creates a new article
-    The incoming request will look like this: { title: String, body: String, author: String }
-    from this request you will save your data as { title: String, body: String, author: String, urlTitle: String }
-    title is a unique identifier for this item.
-    urlTitle is similar to the title that was passed in but instead is a URL Encoded version. Javascript has a native way to url-encode strings. example: If given a title of "The Best Magpie Developer of 2016", it's url-encoded equivilent is "The%20Best%20Magpie%20Developer%20of%202016".
-    If successful then redirect the user back to the /articles route.
-    If not successful then send the user back to the new article route, /articles/new and some way to communicate the error back to the user via templating.*/
-    let { title, body, author } = req.body;
-    //trim any excess white space from beginning and ending of data input
-    title = title.trim();
-    body = body.trim();
-    author = author.trim();
-    //get length of each data input without whitespaces
-    const lengthOfTitle = title.length;
-    const lengthOfBody = body.length;
-    const lengthOfAuthor = author.length;
-    if (lengthOfTitle > 0 && lengthOfBody > 0 && lengthOfAuthor > 0) {
-      AllArticles.addArticle(new Article(title, body, author));
+    const title = req.body.title.trim();
+    const body = req.body.body.trim();
+    const author = req.body.author.trim();
+    if (title && body && author) {
+      const newArticle = new Article(title, body, author);
+      AllArticles.addArticle(newArticle);
       res.redirect('/articles');
     } else {
-      /*If not successful then send the user back to the new product route, /products/new and some way to communicate the error back to the user via templating.*/
-      //////////////////////TO DO!!!!!!!!///////////////////////////////
-      res.send(req.body);
+      res.status(404).render('404', { url: req.url });
     }
   };
 }

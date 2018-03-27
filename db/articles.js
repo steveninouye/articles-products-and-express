@@ -32,15 +32,29 @@ class _AllArticles {
   }
 
   searchForTitle(title) {
-    const returnValue = this.getIndexOfTitle(title)
-      ? this.storage[this.getIndexOfTitle(title)]
-      : false;
+    const returnValue =
+      this.getIndexOfTitle(title) !== false
+        ? this.storage[this.getIndexOfTitle(title)]
+        : false;
     return returnValue;
   }
 
   deleteTitle(title) {
     if (this.getIndexOfTitle(title)) {
       this.storage.splice(this.getIndexOfTitle(title), 1);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  editTitle(title, body, author) {
+    title = title.trim();
+    body = body.trim();
+    author = author.trim();
+    if (this.getIndexOfTitle(title) !== false && body && author) {
+      this.storage[this.getIndexOfTitle(title)].body = body;
+      this.storage[this.getIndexOfTitle(title)].author = author;
       return true;
     } else {
       return false;
