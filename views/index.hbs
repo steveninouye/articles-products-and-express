@@ -1,33 +1,35 @@
 {{> header}}
-<h1>{{capitalFirstLetter title}}s</h1>
-<a href="/{{path}}/new">Create New {{capitalFirstLetter title}}</a>
-<table>
-    {{!-- Add Table Headers for each item in keys --}}
-    <thead>
-        <tr>
-            {{#each keys}}
-            <th>{{capitalFirstLetter this}}</th>
-            {{/each}}
-        </tr>
-    </thead>
-    {{!-- Add Header Data for each item in Data --}}
-    <tbody>
-        {{#each data}}
-        <tr>
-            {{#each ../keys}}
-            <td>
-                <a href="/{{../../path}}/{{#if ../id}}{{../id}}{{/if}}{{#if ../urlTitle}}{{../urlTitle}}{{/if}}">
+<div class='ui container'>
+    <h1 class='ui huge header'>{{capitalFirstLetter title}}s</h1>
+    <hr>
+    <a class='ui green button' href="/{{path}}/new">Create New {{capitalFirstLetter title}}</a>
+    <table class='ui celled table'>
+        {{!-- Add Table Headers for each item in keys --}}
+        <thead>
+            <tr>
+                {{#each keys}}
+                <th>{{capitalFirstLetter this}}</th>
+                {{/each}}
+            </tr>
+        </thead>
+        {{!-- Add Header Data for each item in Data --}}
+        <tbody>
+            {{#each data}}
+            <tr>
+                {{#each ../keys}}
+                <td>
+                    <a href="/{{../../path}}/{{#if ../id}}{{../id}}{{/if}}{{#if ../urlTitle}}{{../urlTitle}}{{/if}}">
 
-                    {{lookup .. this}}</a>
-            </td>
+                        {{lookup .. this}}</a>
+                </td>
+                {{/each}}
+            </tr>
             {{/each}}
-        </tr>
-        {{/each}}
-    </tbody>
-</table>
-<br>
-<br>
-<a href="/">Go to Home Page</a>
+        </tbody>
+    </table>
 
-<h2>{{hello}}</h2>
+    <br>
+    <br>
+    <a href="/">Go to Home Page</a>
+</div>
 {{> footer}}

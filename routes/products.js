@@ -50,7 +50,7 @@ function GET_products_ID_edit() {
       keys.splice(keys.indexOf('id'), 1);
       res.render('edit', {
         title: 'product',
-        idName: 'ID:',
+        idName: 'ID',
         idValue: id,
         path: '/products/' + id,
         keys,

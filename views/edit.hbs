@@ -1,14 +1,25 @@
-{{> header}} Edit {{capitalFirstLetter title}}
-<br>{{idName}} {{idValue}}
-<form action="{{path}}" method="POST">
-    <input type="hidden" name="_method" value="PUT"> {{#each keys}} {{this}}:
-    <input type="text" name="{{this}}" id="name" value="{{lookup ../data this}}">
-    <br> {{/each}}
-    <input type="submit" value="Edit {{capitalFirstLetter title}}">
-</form>
-<form action="{{path}}" method="POST">
-    <input type="hidden" name="_method" value="DELETE">
-    <input type="submit" value="Delete {{capitalFirstLetter title}}">
-</form>
-<a href="/{{title}}s">Back to {{capitalFirstLetter title}}s List</a>
+{{> header}}
+<div class="ui container">
+    <h1>Edit {{capitalFirstLetter title}}</h1>
+    <hr>
+    <h3>{{idName}}: &nbsp;&nbsp;{{idValue}}</h3>
+    <form action="{{path}}" method="POST">
+        <input type="hidden" name="_method" value="PUT"> {{#each keys}}
+        <h3>{{capitalFirstLetter this}}:</h3>
+        <div class="ui fluid input">
+            <input type="text" name="{{this}}" id="name" value="{{lookup ../data this}}">
+        </div>
+        {{/each}}
+        <br>
+        <input class='ui big blue button' type="submit" value="Edit {{capitalFirstLetter title}}">
+    </form>
+    <br>
+    <hr>
+    <br>
+    <form action="{{path}}" method="POST">
+        <input type="hidden" name="_method" value="DELETE">
+        <input class='ui negative mini button' type="submit" value="Delete {{capitalFirstLetter title}}">
+    </form>
+    <a href="/{{title}}s">Back to {{capitalFirstLetter title}}s List</a>
+</div>
 {{> footer}}

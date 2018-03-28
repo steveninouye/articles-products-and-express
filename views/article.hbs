@@ -1,7 +1,13 @@
 {{> header}}
-<h1>{{title}}</h1>
-<h2>Written By {{author}}</h2>
-<h2>{{body}}</h2>
-<a href="/articles">Back to Articles List</a>
-<a href="/articles/{{urlTitle}}/edit">Edit</a>
+<div class='ui container'>
+    <h1>{{title}}</h1>
+    <hr>
+    <h3>Written By {{author}}</h3>
+    <h3>{{body}}</h3>
+    <br>
+    <a class='ui blue button' href="/articles/{{urlTitle}}/edit">Edit</a>
+    <br>
+    <br>
+    <a href="/articles">Back to Articles List</a>
+</div>
 {{> footer}}
