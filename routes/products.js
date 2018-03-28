@@ -1,7 +1,7 @@
 const { AllProducts, Product } = require('../db/products');
 
-AllProducts.addProduct(new Product('Steve', 24, 5));
-AllProducts.addProduct(new Product('Ann', 22, 10));
+AllProducts.addProduct(new Product('2015 MacBook Pro', 800, 3));
+AllProducts.addProduct(new Product('Lenovo Yoga 710', 600, 4));
 
 function DELETE_products_ID() {
   return (req, res) => {
@@ -9,8 +9,6 @@ function DELETE_products_ID() {
     if (id && AllProducts.deleteProduct(id)) {
       res.redirect('/products');
     } else {
-      /*If not successful then send the user back to the new product route, /products/:id, where :id is the product that was just edited and a message that this action was unsucessful. */
-      //////////////////////TO DO!!!!!!!!///////////////////////////////
       res.status(404).render('404', { url: req.url });
     }
   };
@@ -23,8 +21,6 @@ function PUT_products_ID() {
     if (AllProducts.editProduct(id, name, price, inventory)) {
       res.redirect('/products');
     } else {
-      /*If not successful then send the user back to the new product route, /products/:id/edit and some way to communicate the error back to the user via templating.*/
-      //////////////////////TO DO!!!!!!!!///////////////////////////////
       res.status(404).render('404', { url: req.url });
     }
   };
@@ -40,8 +36,6 @@ function POST_products() {
       AllProducts.addProduct(newProduct);
       res.redirect('/products');
     } else {
-      /*If not successful then send the user back to the new product route, /products/new and some way to communicate the error back to the user via templating.*/
-      //////////////////////TO DO!!!!!!!!///////////////////////////////
       res.status(404).render('404', { url: req.url });
     }
   };
@@ -73,7 +67,6 @@ function GET_products_ID() {
     const productToEdit = AllProducts.searchForProduct(Number(req.params.id));
     if (productToEdit) {
       const { id, name, price, inventory } = productToEdit;
-      let keys = Object.keys(productToEdit);
       res.render('product', {
         id,
         name,
@@ -95,8 +88,6 @@ function GET_products_new() {
 
 function GET_products() {
   return (req, res) => {
-    /*responds with HTML generated from your template which displays all Products added thus far.
-    file name: index.hbs*/
     const productKeys = AllProducts.storage[0]
       ? Object.keys(AllProducts.storage[0])
       : ['id', 'name', 'price', 'inventory'];

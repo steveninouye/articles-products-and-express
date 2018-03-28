@@ -1,10 +1,22 @@
 const { AllArticles, Article } = require('../db/articles');
 
 AllArticles.addArticle(
-  new Article('Red Fern Grows', 'this is a scary story', 'Steven King')
+  new Article(
+    'Think And Grow Rich',
+    `Think and Grow Rich is based on Hill's earlier work The Law of Success, said to be the result of more than twenty years of study of many individuals who had amassed personal fortunes.[3]
+
+  Hill studied their habits and evolved 16 "laws" to be applied to achieve success. Think and Grow Rich condenses them, providing the reader with 13 principles in the form of a "Philosophy of Achievement".[3] Mark Hansen has said time has shown that two of the laws/principles are most important: 1) The MasterMind principle/process and 2) "Know very clearly where you want to go."
+  
+  The book asserts that desire, faith and persistence can propel one to great heights if one can suppress negative thoughts and focus on long-term goals.`,
+    'Napoleon Hill'
+  )
 );
 AllArticles.addArticle(
-  new Article('GooseBumps', 'kids scary stories', 'Stan Sherriff')
+  new Article(
+    'How to Win Friends And Influence People',
+    `Having found no “practical, working handbook on human relations,” Mr. Carnegie set out to create one, researching the lives of greats from Julius Caesar to Thomas Edison and interviewing such people as Franklin D. Roosevelt and Clark Gable. If you’ve read some of my other posts, you probably know how much weight I give to the technique of interviewing the outliers to borrow their tools. This book is the application of that method to the science of human interaction.`,
+    'Dale Carnegie'
+  )
 );
 
 function DELETE_articles_TITLE() {
@@ -22,7 +34,6 @@ function PUT_articles_TITLE() {
   return (req, res) => {
     const title = req.params.title;
     let { body, author } = req.body;
-    //trim any excess white space from beginning and ending of data input
     body = body.trim();
     author = author.trim();
     if (AllArticles.editTitle(title, body, author)) {
@@ -50,28 +61,19 @@ function POST_articles() {
 
 function GET_articles_TITLE_edit() {
   return (req, res) => {
-    /*responds with HTML generated from your templates.
-    The HTML should contain a form (with values already pre-filled?) so that a user can update the information for an article. This form points to your server's route for editing an article.
-    file name: edit.hbs*/
-    const ArrayOfMatchingArticles = AllArticles.getAllArticles().reduce(
-      (a, c) => {
-        if (c.title === req.params.title) {
-          a.push(c);
-        }
-        return a;
-      },
-      []
-    );
-    if (ArrayOfMatchingArticles.length === 1) {
-      const { urlTitle, title, body, author } = ArrayOfMatchingArticles[0];
-      let keys = ['body', 'author'];
+    const articleToEdit = AllArticles.searchForTitle(req.params.title);
+    if (articleToEdit) {
+      const { title, body, author, urlTitle } = articleToEdit;
+      let keys = Object.keys(articleToEdit);
+      keys.splice(keys.indexOf('title'), 1);
+      keys.splice(keys.indexOf('urlTitle'), 1);
       res.render('edit', {
         title: 'article',
         idName: 'Title',
         idValue: title,
         path: `/articles/${urlTitle}`,
         keys,
-        data: ArrayOfMatchingArticles[0]
+        data: articleToEdit
       });
     } else {
       res.status(404).render('404', { url: req.url });
@@ -81,19 +83,9 @@ function GET_articles_TITLE_edit() {
 
 function GET_articles_TITLE() {
   return (req, res) => {
-    /*responds with HTML generated from your template which displays the Article information for the article with the corresponding title.
-    file name: article.hbs*/
-    const ArrayOfMatchingArticles = AllArticles.getAllArticles().reduce(
-      (a, c) => {
-        if (c.title === req.params.title) {
-          a.push(c);
-        }
-        return a;
-      },
-      []
-    );
-    if (ArrayOfMatchingArticles.length === 1) {
-      const { urlTitle, title, body, author } = ArrayOfMatchingArticles[0];
+    const articleToEdit = AllArticles.searchForTitle(req.params.title);
+    if (articleToEdit) {
+      const { title, body, author, urlTitle } = articleToEdit;
       res.render('article', {
         urlTitle,
         title,
@@ -108,9 +100,6 @@ function GET_articles_TITLE() {
 
 function GET_articles_new() {
   return (req, res) => {
-    /*responds with HTML generated from your templates.
-    The HTML should contain an empty form which a user will be able to create a new article. This form points to your server's route for creating a new article.
-    file name: new.hbs*/
     const keys = ['title', 'body', 'author'];
     res.render('new', { title: 'Article', path: 'articles', keys });
   };
@@ -118,8 +107,6 @@ function GET_articles_new() {
 
 function GET_articles() {
   return (req, res) => {
-    /*responds with HTML generated from your template which displays all Articles added thus far.
-    file name: index.hbs*/
     const articleKeys = Object.keys(AllArticles.storage[0]);
     articleKeys.splice(articleKeys.indexOf('urlTitle'), 1);
     res.render('index', {
