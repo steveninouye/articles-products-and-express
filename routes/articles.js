@@ -19,103 +19,89 @@ AllArticles.addArticle(
   )
 );
 
-function DELETE_articles_TITLE() {
-  return (req, res) => {
-    const title = req.params.title;
-    if (title && AllArticles.deleteTitle(title)) {
-      res.redirect('/articles');
-    } else {
-      res.status(404).render('404', { url: req.url });
-    }
-  };
+function DELETE_articles_TITLE(req, res) {
+  const title = req.params.title;
+  if (title && AllArticles.deleteTitle(title)) {
+    res.redirect('/articles');
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
 }
 
-function PUT_articles_TITLE() {
-  return (req, res) => {
-    const title = req.params.title;
-    let { body, author } = req.body;
-    body = body.trim();
-    author = author.trim();
-    if (AllArticles.editTitle(title, body, author)) {
-      res.redirect('/articles');
-    } else {
-      res.status(404).render('404', { url: req.url });
-    }
-  };
+function PUT_articles_TITLE(req, res) {
+  const title = req.params.title;
+  let { body, author } = req.body;
+  body = body.trim();
+  author = author.trim();
+  if (AllArticles.editTitle(title, body, author)) {
+    res.redirect('/articles');
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
 }
 
-function POST_articles() {
-  return (req, res) => {
-    const title = req.body.title.trim();
-    const body = req.body.body.trim();
-    const author = req.body.author.trim();
-    if (title && body && author) {
-      const newArticle = new Article(title, body, author);
-      AllArticles.addArticle(newArticle);
-      res.redirect('/articles');
-    } else {
-      res.status(404).render('404', { url: req.url });
-    }
-  };
+function POST_articles(req, res) {
+  const title = req.body.title.trim();
+  const body = req.body.body.trim();
+  const author = req.body.author.trim();
+  if (title && body && author) {
+    const newArticle = new Article(title, body, author);
+    AllArticles.addArticle(newArticle);
+    res.redirect('/articles');
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
 }
 
-function GET_articles_TITLE_edit() {
-  return (req, res) => {
-    const articleToEdit = AllArticles.searchForTitle(req.params.title);
-    if (articleToEdit) {
-      const { title, body, author, urlTitle } = articleToEdit;
-      let keys = Object.keys(articleToEdit);
-      keys.splice(keys.indexOf('title'), 1);
-      keys.splice(keys.indexOf('urlTitle'), 1);
-      res.render('edit', {
-        title: 'article',
-        idName: 'Title',
-        idValue: title,
-        path: `/articles/${urlTitle}`,
-        keys,
-        data: articleToEdit
-      });
-    } else {
-      res.status(404).render('404', { url: req.url });
-    }
-  };
-}
-
-function GET_articles_TITLE() {
-  return (req, res) => {
-    const articleToEdit = AllArticles.searchForTitle(req.params.title);
-    if (articleToEdit) {
-      const { title, body, author, urlTitle } = articleToEdit;
-      res.render('article', {
-        urlTitle,
-        title,
-        body,
-        author
-      });
-    } else {
-      res.status(404).render('404', { url: req.url });
-    }
-  };
-}
-
-function GET_articles_new() {
-  return (req, res) => {
-    const keys = ['title', 'body', 'author'];
-    res.render('new', { title: 'Article', path: 'articles', keys });
-  };
-}
-
-function GET_articles() {
-  return (req, res) => {
-    const articleKeys = Object.keys(AllArticles.storage[0]);
-    articleKeys.splice(articleKeys.indexOf('urlTitle'), 1);
-    res.render('index', {
+function GET_articles_TITLE_edit(req, res) {
+  const articleToEdit = AllArticles.searchForTitle(req.params.title);
+  if (articleToEdit) {
+    const { title, body, author, urlTitle } = articleToEdit;
+    let keys = Object.keys(articleToEdit);
+    keys.splice(keys.indexOf('title'), 1);
+    keys.splice(keys.indexOf('urlTitle'), 1);
+    res.render('edit', {
       title: 'article',
-      path: 'articles',
-      keys: articleKeys,
-      data: AllArticles.getAllArticles()
+      idName: 'Title',
+      idValue: title,
+      path: `/articles/${urlTitle}`,
+      keys,
+      data: articleToEdit
     });
-  };
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
+}
+
+function GET_articles_TITLE(req, res) {
+  const articleToEdit = AllArticles.searchForTitle(req.params.title);
+  if (articleToEdit) {
+    const { title, body, author, urlTitle } = articleToEdit;
+    res.render('article', {
+      urlTitle,
+      title,
+      body,
+      author
+    });
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
+}
+
+function GET_articles_new(req, res) {
+  const keys = ['title', 'body', 'author'];
+  res.render('new', { title: 'Article', path: 'articles', keys });
+}
+
+function GET_articles(req, res) {
+  const articleKeys = Object.keys(AllArticles.storage[0]);
+  articleKeys.splice(articleKeys.indexOf('urlTitle'), 1);
+  res.render('index', {
+    title: 'article',
+    path: 'articles',
+    keys: articleKeys,
+    data: AllArticles.getAllArticles()
+  });
 }
 
 module.exports = {

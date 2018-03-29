@@ -3,8 +3,7 @@ const { AllProducts, Product } = require('../db/products');
 AllProducts.addProduct(new Product('2015 MacBook Pro', 800, 3));
 AllProducts.addProduct(new Product('Lenovo Yoga 710', 600, 4));
 
-function DELETE_products_ID() {
-  return (req, res) => {
+function DELETE_products_ID (req, res) {
     const id = Number(req.params.id);
     if (id && AllProducts.deleteProduct(id)) {
       res.redirect('/products');
@@ -12,10 +11,8 @@ function DELETE_products_ID() {
       res.status(404).render('404', { url: req.url });
     }
   };
-}
 
-function PUT_products_ID() {
-  return (req, res) => {
+function PUT_products_ID(req, res) {
     const id = Number(req.params.id);
     const { name, price, inventory } = req.body;
     if (AllProducts.editProduct(id, name, price, inventory)) {
@@ -24,10 +21,8 @@ function PUT_products_ID() {
       res.status(404).render('404', { url: req.url });
     }
   };
-}
 
-function POST_products() {
-  return (req, res) => {
+function POST_products(req, res) {
     const name = req.body.name.trim();
     const price = parseInt(Number(req.body.price.trim()) * 100) / 100;
     const inventory = Number(req.body.inventory.trim());
@@ -39,10 +34,8 @@ function POST_products() {
       res.status(404).render('404', { url: req.url });
     }
   };
-}
 
-function GET_products_ID_edit() {
-  return (req, res) => {
+function GET_products_ID_edit(req, res) {
     const productToEdit = AllProducts.searchForProduct(Number(req.params.id));
     if (productToEdit) {
       const { id, name, price, inventory } = productToEdit;
@@ -60,10 +53,8 @@ function GET_products_ID_edit() {
       res.status(404).render('404', { url: req.url });
     }
   };
-}
 
-function GET_products_ID() {
-  return (req, res) => {
+function GET_products_ID(req, res) {
     const productToEdit = AllProducts.searchForProduct(Number(req.params.id));
     if (productToEdit) {
       const { id, name, price, inventory } = productToEdit;
@@ -77,17 +68,13 @@ function GET_products_ID() {
       res.status(404).render('404', { url: req.url });
     }
   };
-}
 
-function GET_products_new() {
-  return (req, res) => {
+function GET_products_new(req, res) {
     const keys = ['name', 'price', 'inventory'];
     res.render('new', { title: 'Product', path: 'products', keys });
   };
-}
 
-function GET_products() {
-  return (req, res) => {
+function GET_products(req, res) {
     const productKeys = AllProducts.storage[0]
       ? Object.keys(AllProducts.storage[0])
       : ['id', 'name', 'price', 'inventory'];
@@ -98,7 +85,7 @@ function GET_products() {
       data: AllProducts.getAllProducts()
     });
   };
-}
+
 module.exports = {
   DELETE_products_ID,
   PUT_products_ID,

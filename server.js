@@ -29,19 +29,19 @@ const {
 
 app.get('/', (req, res) => res.render('home'));
 
-app.get('/products', GET_products());
+app.get('/products', GET_products);
 
-app.get('/products/new', GET_products_new());
+app.get('/products/new', GET_products_new);
 
-app.get('/products/:id', GET_products_ID());
+app.get('/products/:id', GET_products_ID);
 
-app.get('/products/:id/edit', GET_products_ID_edit());
+app.get('/products/:id/edit', GET_products_ID_edit);
 
-app.post('/products', POST_products());
+app.post('/products', POST_products);
 
-app.put('/products/:id', PUT_products_ID());
+app.put('/products/:id', PUT_products_ID);
 
-app.delete('/products/:id', DELETE_products_ID());
+app.delete('/products/:id', DELETE_products_ID);
 
 ////////////////////////////////////////////////////////////////////////
 const {
@@ -54,19 +54,19 @@ const {
   GET_articles_TITLE_edit
 } = require('./routes/articles');
 
-app.get('/articles', GET_articles());
+app.get('/articles', GET_articles);
 
-app.get('/articles/new', GET_articles_new());
+app.get('/articles/new', GET_articles_new);
 
-app.get('/articles/:title', GET_articles_TITLE());
+app.get('/articles/:title', GET_articles_TITLE);
 
-app.get('/articles/:title/edit', GET_articles_TITLE_edit());
+app.get('/articles/:title/edit', GET_articles_TITLE_edit);
 
-app.post('/articles', POST_articles());
+app.post('/articles', POST_articles);
 
-app.put('/articles/:title', PUT_articles_TITLE());
+app.put('/articles/:title', PUT_articles_TITLE);
 
-app.delete('/articles/:title', DELETE_articles_TITLE());
+app.delete('/articles/:title', DELETE_articles_TITLE);
 
 app.listen(PORT, () => {
   console.log(`Server up on port ${PORT}`);
