@@ -8,7 +8,7 @@ class _AllArticles {
       this.storage.push(article);
       return true;
     } else {
-      throw new Error('Add Valid Product to Products');
+      return false;
     }
   }
 
@@ -68,32 +68,6 @@ class Article {
     this.body = body;
     this.author = author;
     this.urlTitle = encodeURI(title);
-  }
-
-  getTitle() {
-    return this.title;
-  }
-
-  getBody() {
-    return this.body;
-  }
-
-  getAuthor() {
-    return this.author;
-  }
-
-  getURLTitle() {
-    return this.urlTitle;
-  }
-
-  changeBody(newBody) {
-    this.title = newBody;
-    return true;
-  }
-
-  changeAuthor(newAuthor) {
-    this.title = newAuthor;
-    return true;
   }
 }
 
