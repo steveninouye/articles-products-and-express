@@ -1,90 +1,90 @@
-const { AllProducts, Product } = require('../db/products');
+const { AllProducts } = require('../db/products');
 
-AllProducts.addProduct(new Product('2015 MacBook Pro', 800, 3));
-AllProducts.addProduct(new Product('Lenovo Yoga 710', 600, 4));
-
-function DELETE_products_ID (req, res) {
-    const id = Number(req.params.id);
-    if (id && AllProducts.deleteProduct(id)) {
+function DELETE_products_ID(req, res) {
+  const id = Number(req.params.id);
+  if (id) {
+    AllProducts.deleteProduct(id).then(data => {
       res.redirect('/products');
-    } else {
-      res.status(404).render('404', { url: req.url });
-    }
-  };
+    });
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
+}
 
 function PUT_products_ID(req, res) {
-    const id = Number(req.params.id);
-    const { name, price, inventory } = req.body;
-    if (AllProducts.editProduct(id, name, price, inventory)) {
+  const id = Number(req.params.id);
+  const { name, price, inventory } = req.body;
+  if (id && name && price && inventory) {
+    AllProducts.editProduct(id, name, price, inventory).then(data => {
       res.redirect('/products');
-    } else {
-      res.status(404).render('404', { url: req.url });
-    }
-  };
+    });
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
+}
 
 function POST_products(req, res) {
-    const name = req.body.name.trim();
-    const price = parseInt(Number(req.body.price.trim()) * 100) / 100;
-    const inventory = Number(req.body.inventory.trim());
-    if (name && price && inventory) {
-      const newProduct = new Product(name, price, inventory);
-      AllProducts.addProduct(newProduct);
+  const name = req.body.name.trim();
+  const price = parseInt(Number(req.body.price.trim()) * 100) / 100;
+  const inventory = Number(req.body.inventory.trim());
+  if (name && price && inventory) {
+    AllProducts.addProduct(name, price, inventory).then(data => {
       res.redirect('/products');
-    } else {
-      res.status(404).render('404', { url: req.url });
-    }
-  };
+    });
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
+}
 
 function GET_products_ID_edit(req, res) {
-    const productToEdit = AllProducts.searchForProduct(Number(req.params.id));
-    if (productToEdit) {
-      const { id, name, price, inventory } = productToEdit;
-      let keys = Object.keys(productToEdit);
-      keys.splice(keys.indexOf('id'), 1);
+  let productID = Number(req.params.id);
+  if (productID) {
+    AllProducts.searchForProduct(productID).then(data => {
+      const { name, price, inventory, product_id } = data[0];
+      let keys = Object.keys(data[0]);
+      keys.splice(keys.indexOf('product_id'), 1);
       res.render('edit', {
         title: 'product',
         idName: 'ID',
-        idValue: id,
-        path: '/products/' + id,
+        idValue: product_id,
+        path: '/products/' + product_id,
         keys,
-        data: productToEdit
+        data: data[0]
       });
-    } else {
-      res.status(404).render('404', { url: req.url });
-    }
-  };
+    });
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
+}
 
 function GET_products_ID(req, res) {
-    const productToEdit = AllProducts.searchForProduct(Number(req.params.id));
-    if (productToEdit) {
-      const { id, name, price, inventory } = productToEdit;
-      res.render('product', {
-        id,
-        name,
-        price,
-        inventory
-      });
-    } else {
-      res.status(404).render('404', { url: req.url });
-    }
-  };
+  let productID = Number(req.params.id);
+  if (productID) {
+    AllProducts.searchForProduct(productID).then(data => {
+      const { name, price, inventory, product_id } = data[0];
+      res.render('product', { name, price, inventory, product_id });
+    });
+  } else {
+    res.status(404).render('404', { url: req.url });
+  }
+}
 
 function GET_products_new(req, res) {
-    const keys = ['name', 'price', 'inventory'];
-    res.render('new', { title: 'Product', path: 'products', keys });
-  };
+  const keys = ['name', 'price', 'inventory'];
+  res.render('new', { title: 'Product', path: 'products', keys });
+}
 
 function GET_products(req, res) {
-    const productKeys = AllProducts.storage[0]
-      ? Object.keys(AllProducts.storage[0])
-      : ['id', 'name', 'price', 'inventory'];
+  AllProducts.getAllProducts().then(data => {
+    const productKeys = Object.keys(data[0]);
     res.render('index', {
       title: 'product',
       path: 'products',
       keys: productKeys,
-      data: AllProducts.getAllProducts()
+      data: data
     });
-  };
+  });
+}
 
 module.exports = {
   DELETE_products_ID,

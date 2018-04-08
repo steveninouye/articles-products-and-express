@@ -1,3 +1,27 @@
+const { host, user, password, database } = require('./config/config');
+var knex = require('knex')({
+  client: 'pg',
+  connection: {
+    host: host,
+    user: user,
+    password: password,
+    database: database
+  }
+});
+
+// knex
+//   //   .raw('SELECT * FROM test_table')
+//   .select()
+//   .from('test_table')
+//   .then(data => {
+//     console.log(data);
+//     knex.destroy();
+//   })
+//   .catch(err => {
+//     console.log(err);
+//     knex.destroy();
+//   });
+
 class _AllArticles {
   constructor() {
     this.storage = [];

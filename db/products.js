@@ -1,82 +1,75 @@
-let id = new Date().getTime();
+const { host, user, password, database } = require('./config/config');
+let AllProducts = {};
+AllProducts.storage = [];
 
-class _AllProducts {
-  constructor() {
-    this.storage = [];
+var knex = require('knex')({
+  client: 'pg',
+  connection: {
+    host: host,
+    user: user,
+    password: password,
+    database: database
   }
+});
 
-  addProduct(product) {
-    if (product instanceof Product) {
-      this.storage.push(product);
-      return true;
-    } else {
-      return false;
-    }
-  }
+AllProducts.addProduct = (name, price, inventory) => {
+  return knex('products').insert({
+    name: name,
+    price: price,
+    inventory: inventory
+  });
+};
 
-  getAllProducts() {
-    return this.storage;
-  }
+AllProducts.getAllProducts = () => {
+  return knex.select().from('products');
+};
 
-  getAllProductID() {
-    return this.storage.reduce((a, c) => {
-      a.push(c.id);
-      return a;
-    }, []);
-  }
-
-  getIndexOfProduct(id) {
-    const returnValue =
-      this.getAllProductID().indexOf(id) !== -1
-        ? this.getAllProductID().indexOf(id)
-        : false;
-    return returnValue;
-  }
-
-  searchForProduct(id) {
-    const returnValue =
-      this.getIndexOfProduct(id) !== false
-        ? this.storage[this.getIndexOfProduct(id)]
-        : false;
-    return returnValue;
-  }
-
-  deleteProduct(id) {
-    if (this.getIndexOfProduct(id) !== false) {
-      this.storage.splice(this.getIndexOfProduct(id), 1);
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  editProduct(id, name, price, inventory) {
-    name = name.trim();
-    price = parseInt(Number(price.trim()) * 100) / 100;
-    inventory = parseInt(inventory.trim());
-    if (this.getIndexOfProduct(id) !== false && name && price && inventory) {
-      this.storage[this.getIndexOfProduct(id)].name = name;
-      this.storage[this.getIndexOfProduct(id)].price = price;
-      this.storage[this.getIndexOfProduct(id)].inventory = inventory;
-      return true;
-    } else {
-      return false;
-    }
-  }
+function getAllProductID() {
+  return knex.select('product_id').from('products');
+  return AllProducts.storage.reduce((a, c) => {
+    a.push(c.id);
+    return a;
+  }, []);
 }
 
-class Product {
-  constructor(name, price, inventory) {
-    this.id = id++;
-    this.name = name;
-    this.price = price;
-    this.inventory = inventory;
-  }
+function getIndexOfProduct(id) {
+  const returnValue =
+    AllProducts.getAllProductID().indexOf(id) !== -1
+      ? AllProducts.getAllProductID().indexOf(id)
+      : false;
+  return returnValue;
 }
 
-const AllProducts = new _AllProducts();
+AllProducts.searchForProduct = id => {
+  return knex
+    .select()
+    .where({ product_id: id })
+    .from('products');
+};
+
+AllProducts.deleteProduct = id => {
+  if (id) {
+    return knex('products')
+      .where('product_id', id)
+      .del();
+  } else {
+    return false;
+  }
+};
+
+AllProducts.editProduct = (id, name, price, inventory) => {
+  name = name.trim();
+  price = parseInt(Number(price.trim()) * 100) / 100;
+  inventory = parseInt(inventory.trim());
+  if (id && name && price && inventory) {
+    return knex('products')
+      .where('product_id', id)
+      .update({ name: name, price: price, inventory: inventory });
+  } else {
+    return false;
+  }
+};
 
 module.exports = {
-  Product,
   AllProducts
 };
