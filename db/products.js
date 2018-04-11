@@ -24,22 +24,6 @@ AllProducts.getAllProducts = () => {
   return knex.select().from('products');
 };
 
-function getAllProductID() {
-  return knex.select('product_id').from('products');
-  return AllProducts.storage.reduce((a, c) => {
-    a.push(c.id);
-    return a;
-  }, []);
-}
-
-function getIndexOfProduct(id) {
-  const returnValue =
-    AllProducts.getAllProductID().indexOf(id) !== -1
-      ? AllProducts.getAllProductID().indexOf(id)
-      : false;
-  return returnValue;
-}
-
 AllProducts.searchForProduct = id => {
   return knex
     .select()
